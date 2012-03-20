@@ -9,6 +9,10 @@ function icl_cache_get($key){
 }  
 
 function icl_cache_set($key, $value=null){
+    
+    global $switched;
+    if(!empty($switched)) return; 
+    
     $icl_cache = get_option('_icl_cache');
     if(false === $icl_cache){
         delete_option('_icl_cache');

@@ -151,9 +151,17 @@ class AbsoluteLinks{
                 }  
                 
                 $post_name = $category_name = $tax_name = false;
+                
                 if(isset($perma_query_vars['pagename'])){
-                    $post_name = $perma_query_vars['pagename']; 
-                    $post_type = 'page';
+                    $page_by_path = get_page_by_path($perma_query_vars['pagename']);
+                    if(isset($page_by_path->post_type) && $page_by_path->post_type != 'page'){
+                        $post_name = $perma_query_vars['pagename']; 
+                        $post_type = 'post';
+                    }else{
+                        $post_name = $perma_query_vars['pagename']; 
+                        $post_type = 'page';
+                        
+                    }
                 }elseif(isset($perma_query_vars['name'])){
                     $post_name = $perma_query_vars['name']; 
                     $post_type = 'post';

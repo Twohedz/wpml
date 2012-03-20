@@ -102,6 +102,9 @@ msgstr ""
 msgid "Copy publishing date to translations"
 msgstr ""
 
+msgid "Sync taxonomy (e.g. category) parents "
+msgstr ""
+
 msgid "Posts and pages synchronization"
 msgstr ""
 
@@ -204,6 +207,45 @@ msgstr ""
 msgid "Translation options"
 msgstr ""
 
+msgid "WP Menus Sync"
+msgstr ""
+
+msgid "Add %s translation for the menu %s. Menu name: %s"
+msgstr ""
+
+msgid "translation of: %s"
+msgstr ""
+
+msgid "Add %s under %s"
+msgstr ""
+
+msgid "Delete %s from %s"
+msgstr ""
+
+msgid "Not translated"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Nothing to sync."
+msgstr ""
+
+msgid "Apply changes"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Auto-generated title. Edit to change."
+msgstr ""
+
+msgid "Sync"
+msgstr ""
+
+msgid "No menus found"
+msgstr ""
+
 msgid "Compatibility packages"
 msgstr ""
 
@@ -264,10 +306,16 @@ msgstr ""
 msgid "A new version of WPML is available. This version contains important security fixes, improved performance and new features. <a href=\"%s\">Upgrade now</a>"
 msgstr ""
 
-msgid "Show reminders"
+msgid "Click OK to confirm.\nYou can enable them back from Translation Management / Multilingual Content setup."
 msgstr ""
 
 msgid "Hide reminders"
+msgstr ""
+
+msgid "Expand reminders"
+msgstr ""
+
+msgid "Collapse reminders"
 msgstr ""
 
 msgid "This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to <a%s>your profile</a>."
@@ -324,6 +372,12 @@ msgstr ""
 msgid "WPML news"
 msgstr ""
 
+msgid "This document is a duplicate of %s and it is maintained by WPML."
+msgstr ""
+
+msgid "WPML will no longer synchronize this %s with the original content."
+msgstr ""
+
 msgid "Language of this %s"
 msgstr ""
 
@@ -351,6 +405,21 @@ msgstr ""
 msgid "Translation is in progress"
 msgstr ""
 
+msgid "duplicate"
+msgstr ""
+
+msgid "Overwrite with %s content."
+msgstr ""
+
+msgid "The current content of this %s will be permanently lost. WPML will copy the %s content and replace the current content."
+msgstr ""
+
+msgid "This operation will synchronize this translation with the original language. When you edit the original, this translation will update immediately. It's meant when you want the content in this language to always be the same as the content in the original language."
+msgstr ""
+
+msgid "Translate independently"
+msgstr ""
+
 msgid "or, translate manually:"
 msgstr ""
 
@@ -364,6 +433,9 @@ msgid "hide"
 msgstr ""
 
 msgid "show"
+msgstr ""
+
+msgid "Duplicate"
 msgstr ""
 
 msgid "Affiliate information check"
@@ -523,9 +595,6 @@ msgid "Language switcher options"
 msgstr ""
 
 msgid "Admin language"
-msgstr ""
-
-msgid "Translation controls"
 msgstr ""
 
 msgid "Blog posts to display"
@@ -732,6 +801,15 @@ msgstr ""
 msgid "Display 'Languages' as the widget title"
 msgstr ""
 
+msgid "Display the language switcher in the WP Menu"
+msgstr ""
+
+msgid "no menus defined"
+msgstr ""
+
+msgid "select"
+msgstr ""
+
 msgid "Language switcher widget preview"
 msgstr ""
 
@@ -739,9 +817,6 @@ msgid "Restore default"
 msgstr ""
 
 msgid "Default admin language: "
-msgstr ""
-
-msgid "Display translation controls on posts and pages lists."
 msgstr ""
 
 msgid "Only translated posts."
@@ -957,6 +1032,9 @@ msgstr ""
 msgid "You are not allowed to manage the WPML Network settings."
 msgstr ""
 
+msgid "Uncategorized"
+msgstr ""
+
 msgid "Wordpress language file (.mo) is missing. Keeping existing display language."
 msgstr ""
 
@@ -997,6 +1075,21 @@ msgid "Show %d reminders"
 msgstr ""
 
 msgid "Post not found"
+msgstr ""
+
+msgid "Error: No custom field"
+msgstr ""
+
+msgid "Error: Please provide translation action"
+msgstr ""
+
+msgid "Settings updated"
+msgstr ""
+
+msgid "Error: WPML Translation Management plugin not initiated"
+msgstr ""
+
+msgid "Error: Please activate WPML Translation Management plugin"
 msgstr ""
 
 msgid "Error:"
@@ -1194,6 +1287,27 @@ msgstr ""
 msgid "Invalid object id"
 msgstr ""
 
+msgid "Translation preferences"
+msgstr ""
+
+msgid "Choose what to do when translating content with this field:"
+msgstr ""
+
+msgid "Do nothing"
+msgstr ""
+
+msgid "Copy from original"
+msgstr ""
+
+msgid "Translate"
+msgstr ""
+
+msgid "Apply"
+msgstr ""
+
+msgid "WPML will copy this field from %s when you save this post."
+msgstr ""
+
 msgid "WPML cannot be activated because your version of PHP is too old. To run correctly, you must have PHP5 installed.<br /> We recommend that you contact your hosting company and request them to switch you to PHP5."
 msgstr ""
 
@@ -1263,7 +1377,7 @@ msgstr ""
 msgid "%s has been added as a translator for this site."
 msgstr ""
 
-msgid "Language pairs for %s has been edited."
+msgid "Language pairs for %s have been edited."
 msgstr ""
 
 msgid "%s has been removed as a translator for this site."
@@ -1279,9 +1393,6 @@ msgid "Chat with translator"
 msgstr ""
 
 msgid "First available"
-msgstr ""
-
-msgid "Not translated"
 msgstr ""
 
 msgid "Waiting for translator"
@@ -1308,10 +1419,13 @@ msgstr ""
 msgid "Selected document(s) sent to translation."
 msgstr ""
 
-msgid "Translation is in progress for job: %s."
+msgid "The original has been deleted!"
 msgstr ""
 
-msgid "You can't translate this document. It's assigned to a different translator."
+msgid "Deleted"
+msgstr ""
+
+msgid "You can't translate this document. It's assigned to a different translator.<br /> Document: <strong>%s</strong> (ID = %d)."
 msgstr ""
 
 msgid "Translation added: "
@@ -1336,6 +1450,9 @@ msgid "Post not found!"
 msgstr ""
 
 msgid "Local"
+msgstr ""
+
+msgid "No matches"
 msgstr ""
 
 msgid "\nView the original document in %s here: %s\n"
@@ -1407,6 +1524,9 @@ msgstr ""
 msgid "Get completed translations"
 msgstr ""
 
+msgid "Menu(s) syncing complete."
+msgstr ""
+
 msgid "Translations:"
 msgstr ""
 
@@ -1414,6 +1534,9 @@ msgid "edit translation"
 msgstr ""
 
 msgid "add translation"
+msgstr ""
+
+msgid "Synchronize menus between languages."
 msgstr ""
 
 msgid "Translation of:"
@@ -1467,6 +1590,9 @@ msgstr ""
 msgid "Save for later"
 msgstr ""
 
+msgid "Adding translation for: %s."
+msgstr ""
+
 msgid "- (No translators available - please %sprovide more information about your site%s)"
 msgstr ""
 
@@ -1498,6 +1624,9 @@ msgid "AJAX Error:"
 msgstr ""
 
 msgid "Private"
+msgstr ""
+
+msgid "Never show this."
 msgstr ""
 
 msgid "WPML will copy %s from %s when you save this post."
@@ -1611,13 +1740,10 @@ msgstr ""
 msgid "Multi-language | WPML %s"
 msgstr ""
 
-msgid "This permalink format can cause problems with translations. See <a href=%s>WPML's minimum requirement page</a>."
-msgstr ""
-
-msgid "The current permalink format can cause problems with translations. See <a href=%s>WPML's minimum requirement page</a>."
-msgstr ""
-
 msgid "Copy content from %s"
+msgstr ""
+
+msgid "This operation copies the content from the original language onto this translation. It's meant for when you want to start with the original content, but keep translating in this language. This button is only enabled when there's no content in the editor."
 msgstr ""
 
 msgid "Custom fields"
@@ -1657,9 +1783,6 @@ msgid "WPML is a powerful plugin with many features. Would you like to see a qui
 msgstr ""
 
 msgid "No thanks, I will configure myself"
-msgstr ""
-
-msgid "Enabled only when there's no translation"
 msgstr ""
 
 msgid "copy from original"

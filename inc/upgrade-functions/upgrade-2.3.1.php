@@ -11,7 +11,7 @@ if($iclsettings['theme_localization_type'] == 2 && !empty($iclsettings['gettext_
     update_option('icl_sitepress_settings', $iclsettings);
 }
 
-$sql = "ALTER TABLE {$wpdb->prefix}icl_locle_map CHANGE locale VARCHAR(32) NOT NULL";
+$sql = "ALTER TABLE {$wpdb->prefix}icl_locale_map CHANGE locale VARCHAR(32) NOT NULL";
 $wpdb->query($sql);
 
 

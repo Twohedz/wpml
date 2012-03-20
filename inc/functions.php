@@ -69,6 +69,36 @@ function _icl_tax_has_objects_recursive($id, $term_id = -1, $rec = 0){
     return false;
 }    
 
+function icl_get_post_children_recursive($post, $type = 'page'){
+    global $wpdb;
+    
+    $post = (array)$post;
+    
+    $children = $wpdb->get_col($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE post_type=%s AND post_parent IN (".join(',', $post).")", $type));
+    
+    if(!empty($children)){
+        $children = array_merge($children, icl_get_post_children_recursive($children));
+    }
+    
+    return $children;
+    
+}
+
+function icl_get_tax_children_recursive($id, $taxonomy = 'category'){
+    global $wpdb;
+    
+    $id = (array)$id;    
+    
+    $children = $wpdb->get_col($wpdb->prepare("SELECT term_id FROM {$wpdb->term_taxonomy} x WHERE x.taxonomy=%s AND parent IN (".join(',', $id).")", $taxonomy));
+    
+    if(!empty($children)){
+        $children = array_merge($children, icl_get_tax_children_recursive($children));
+    }
+    
+    return $children;
+    
+}
+
 function _icl_trash_restore_prompt(){
     global $sitepress;
     if(isset($_GET['lang'])){
@@ -104,9 +134,9 @@ function icl_pop_info($message, $icon='info', $args = array()){
     
     ?>
     <div class="icl_pop_info_wrap">
-    <img class="icl_pop_info_but" src="<?php echo $icon ?>" width="<?php echo $icon_size ?>" height="<?php echo $icon_size ?>" alt="info" onclick="jQuery('.icl_pop_info').hide();jQuery(this).next().fadeIn();" />
+    <img class="icl_pop_info_but" src="<?php echo $icon ?>" width="<?php echo $icon_size ?>" height="<?php echo $icon_size ?>" alt="info" />
     <div class="icl_cyan_box icl_pop_info">
-    <img align="right" src="<?php echo ICL_PLUGIN_URL ?>/res/img/ico-close.png" width="12" height="12" alt="x" onclick="jQuery(this).parent().fadeOut()" />
+    <img class="icl_pop_info_but_close" align="right" src="<?php echo ICL_PLUGIN_URL ?>/res/img/ico-close.png" width="12" height="12" alt="x" />
     <?php echo $message; ?>
     </div>
     </div>

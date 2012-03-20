@@ -148,6 +148,13 @@ addLoadEvent(function(){
         jQuery('#icl_enable_content_translation').removeAttr('disabled');
     });    
     jQuery('#icl_enable_content_translation, .icl_noenable_content_translation').click(iclEnableContentTranslation);    
+    
+    jQuery('#icl_display_ls_in_menu').change(function(){
+        if(jQuery(this).attr('checked'))
+            jQuery('#icl_ls_menus_list').show();
+        else
+            jQuery('#icl_ls_menus_list').hide();            
+    });
         
 });
 function editingDefaultLanguage(){

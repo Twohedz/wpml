@@ -43,7 +43,13 @@ switch($_REQUEST['icl_ajx_action']){
                 if(!in_array($lang['code'],array_keys($default_categories))){
                    // Create category for language
                    // add it to defaults                   
-                   $tr_cat = $default_category_main . ' @' . $lang['code'];
+                   if($default_category_main == 'Uncategorized'){
+                        $this->switch_locale($lang['code']);
+                        $tr_cat = __('Uncategorized', 'sitepress');
+                        $this->switch_locale();
+                   }else{
+                        $tr_cat = $default_category_main . ' @' . $lang['code'];    
+                   }
                    $_POST['icl_trid'] = $default_category_trid;
                    $_POST['icl_tax_category_language'] = $lang['code'];
                    $tmp = wp_insert_term($tr_cat, 'category');                   
@@ -193,7 +199,7 @@ switch($_REQUEST['icl_ajx_action']){
                 }
             }
             foreach($swidgets as $k=>$v){
-                $key = array_search('icl_lang_sel_widget',$swidgets[$k]);
+                $key = array_search('icl_lang_sel_widget',(array)$swidgets[$k]);
                 if(false !== $key && $k !== $_POST['icl_language_switcher_sidebar']){
                     unset($swidgets[$k][$key]);
                 }elseif($k==$_POST['icl_language_switcher_sidebar'] && !in_array('icl_lang_sel_widget',$swidgets[$k])){
@@ -254,6 +260,9 @@ switch($_REQUEST['icl_ajx_action']){
         $iclsettings['icl_widget_title_show'] = (isset($_POST['icl_widget_title_show'])) ? 1 : 0;
         $iclsettings['icl_additional_css'] = $_POST['icl_additional_css'];
         
+        $iclsettings['display_ls_in_menu'] = @intval($_POST['display_ls_in_menu']);
+        $iclsettings['menu_for_ls'] = @intval($_POST['menu_for_ls']);
+        
         if(!$iclsettings['icl_lso_flags'] && !$iclsettings['icl_lso_native_lang'] && !$iclsettings['icl_lso_display_lang']){
             echo '0|';
             echo __('At least one of the language switcher style options needs to be checked', 'sitepress');    
@@ -268,11 +277,6 @@ switch($_REQUEST['icl_ajx_action']){
         $this->icl_locale_cache->clear();
         echo 1; 
         break;    
-    case 'icl_lang_more_options':
-        $iclsettings['hide_translation_controls_on_posts_lists'] = !$_POST['icl_translation_controls_on_posts_lists'];
-        $this->save_settings($iclsettings);
-        echo 1; 
-        break;
     case 'icl_blog_posts':
         $iclsettings['show_untranslated_blog_posts'] = $_POST['icl_untranslated_blog_posts'];
         $this->save_settings($iclsettings);
@@ -517,11 +521,13 @@ switch($_REQUEST['icl_ajx_action']){
         break;
     case 'toggle_show_translations':
         $iclsettings = $this->get_settings();
-        $iclsettings['show_translations_flag'] = intval(!$iclsettings['show_translations_flag']);
+        $iclsettings['show_translations_flag'] = @intval(!$iclsettings['show_translations_flag']);
         $this->save_settings($iclsettings);    
         break;
     case 'icl_messages': 
         $iclsettings = $this->get_settings();
+        
+        if(!empty($this->settings['icl_disable_reminders'])) break;
         
         if(!empty($iclsettings['site_id']) && !empty($iclsettings['access_key']) && empty($iclsettings['icl_anonymous_user'])){
             $iclq = new ICanLocalizeQuery($iclsettings['site_id'], $iclsettings['access_key']);       
@@ -589,6 +595,18 @@ switch($_REQUEST['icl_ajx_action']){
         $iclq->delete_message($_POST['message_id']);
         break;
     case 'icl_show_reminders':
+        switch($_POST['state']){
+            case 'show':
+                $iclsettings['icl_show_reminders'] = 1; 
+                break;
+            case 'hide':
+                $iclsettings['icl_show_reminders'] = 0; 
+                break;
+            case 'close':
+                $iclsettings['icl_disable_reminders'] = 1; 
+                break;
+            default: // nothing
+        }
         $iclsettings['icl_show_reminders'] = $_POST['state']=='show'?1:0;
         $this->save_settings($iclsettings);
         break;
@@ -653,20 +671,41 @@ switch($_REQUEST['icl_ajx_action']){
     case 'save_translator_note':
         update_post_meta($_POST['post_id'], '_icl_translator_note', $_POST['note']);
         break;
-    
-    case 'icl_st_more_options':
-        foreach($_POST['icl_st'] as $k=>$v){
-            $iclsettings['st'][$k] = $v;
+    case 'icl_st_track_strings':
+        if(wp_verify_nonce($_POST['_wpnonce'], 'icl_st_track_strings')){
+            foreach($_POST['icl_st'] as $k=>$v){
+                $iclsettings['st'][$k] = $v;
+            }
+            $this->save_settings($iclsettings);
+            echo 1;
+        }else{
+            echo 0;
         }
-        $this->save_settings($iclsettings);
-        echo 1;
+        break;
+    case 'icl_st_more_options':
+        if(wp_verify_nonce($_POST['_wpnonce'], 'icl_st_more_options')){
+            $iclsettings['st']['translated-users'] = !empty($_POST['users']) ? array_keys($_POST['users']) : array();        
+            $this->save_settings($iclsettings);
+            if(!empty($iclsettings['st']['translated-users'])){
+                global $sitepress_settings;
+                $sitepress_settings['st']['translated-users'] = $iclsettings['st']['translated-users'];
+                icl_st_register_user_strings_all();
+            }
+            echo 1;
+        }else{
+            echo 0;
+        }
         break;
 
     case 'icl_st_ar_form':
-        // Auto register string settings.
-        $iclsettings['st']['icl_st_auto_reg'] = $_POST['icl_auto_reg_type'];
-        $this->save_settings($iclsettings);
-        echo 1;
+        if(wp_verify_nonce($_POST['_wpnonce'], 'icl_ar_form')){
+            // Auto register string settings.
+            $iclsettings['st']['icl_st_auto_reg'] = $_POST['icl_auto_reg_type'];
+            $this->save_settings($iclsettings);
+            echo 1;
+        }else{
+            echo 0;
+        }
         break;
     
     case 'affiliate_info_check':        
@@ -811,16 +850,57 @@ switch($_REQUEST['icl_ajx_action']){
         $error = false;
         $json  = array();
         if(!empty($post)){
-            $json['body'] = $post->post_content;
+            if($_POST['editor_type'] == 'rich'){
+                $json['body'] = htmlspecialchars_decode(wp_richedit_pre($post->post_content));    
+            }else{
+                $json['body'] = htmlspecialchars_decode(wp_htmledit_pre($post->post_content));    
+            }
+            
         }else{
             $json['error'] = __('Post not found', 'sitepress');
         }
+        do_action('icl_copy_from_original', $post_id);
         echo json_encode($json);
         break;
 
     case 'save_user_preferences':
         $this->user_preferences = array_merge_recursive((array)$this->user_preferences, $_POST['user_preferences']);
         $this->save_user_preferences();
+        break;
+    
+    case 'wpml_cf_translation_preferences':
+        if (empty($_POST['_wpnonce'])
+                || !wp_verify_nonce($_POST['_wpnonce'], 'wpml_cf_translation_preferences') ) {
+            die('Security check failed');
+        }
+        if (empty($_POST['custom_field'])) {
+            echo '<span style="color:#FF0000;">'
+            . __('Error: No custom field', 'wpml') . '</span>';
+            die();
+        }
+        $_POST['custom_field'] = @strval($_POST['custom_field']);
+        if (!isset($_POST['translate_action'])) {
+            echo '<span style="color:#FF0000;">'
+            . __('Error: Please provide translation action', 'wpml') . '</span>';
+            die();
+        }
+        $_POST['translate_action'] = @intval($_POST['translate_action']);
+        if (defined('WPML_TM_VERSION')) {
+            global $iclTranslationManagement;
+            if (!empty($iclTranslationManagement)) {
+                $iclTranslationManagement->settings['custom_fields_translation'][$_POST['custom_field']] = $_POST['translate_action'];
+                $iclTranslationManagement->save_settings();
+                echo '<strong><em>' . __('Settings updated', 'wpml') . '</em></strong>';
+            } else {
+                echo '<span style="color:#FF0000;">'
+                . __('Error: WPML Translation Management plugin not initiated', 'wpml')
+                . '</span>';
+            }
+        } else {
+            echo '<span style="color:#FF0000;">'
+            . __('Error: Please activate WPML Translation Management plugin', 'wpml')
+                    . '</span>';
+        }
         break;
                 
     default:

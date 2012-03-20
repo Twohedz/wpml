@@ -177,6 +177,7 @@ function _potx_process_file($file_path, $strip_prefix = 0, $save_callback = '_po
   unset($raw_tokens);
                                                                 
   // Drupal 7 onwards supports context on t().
+  if(!empty($src_tokens))
   foreach($src_tokens as $tk){    
     _potx_find_t_calls_with_context($file_name, $save_callback, $tk);    
   }
@@ -737,6 +738,8 @@ function _potx_find_t_calls_with_context($file, $save_callback, $function_name =
                 $text = $mid[1];
             }
             
+            if(!isset($_potx_tokens[$ti+$domain_offset][1])) return false;
+            
             if(!preg_match('#^(\'|")(.+)#', $_potx_tokens[$ti+$domain_offset][1])){
                 $constant_val = @constant($_potx_tokens[$ti+$domain_offset][1]);    
                 if(!is_null($constant_val)){
@@ -755,7 +758,6 @@ function _potx_find_t_calls_with_context($file, $save_callback, $function_name =
             }else{
                 $domain = trim($_potx_tokens[$ti+$domain_offset][1],"\"' ");    
             }
-
             
             // exception for gettext calls with contexts
             if(false !== $context_offset){
@@ -786,7 +788,7 @@ function _potx_find_t_calls_with_context($file, $save_callback, $function_name =
           }
           if ($domain !== POTX_CONTEXT_ERROR) {
             // Only save if there was no error in context parsing.
-            $save_callback(_potx_format_quoted_string($mid[1]), $domain, $context, $file, $line, $string_mode);
+            $save_callback(_potx_format_quoted_string($mid[1]), $domain, @strval($context), $file, $line, $string_mode);
             if(isset($text_plural)){
                 $save_callback(_potx_format_quoted_string($text_plural), $domain, $context, $file, $line, $string_mode);
             }

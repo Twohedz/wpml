@@ -123,7 +123,6 @@ global $language_switcher_defaults, $language_switcher_defaults_alt;
                 '<li><a href="#lang-sec-2">'.icl_nobreak(__('Language URL format', 'sitepress')).'</a></li>'.
                 '<li><a href="#lang-sec-3">'.icl_nobreak(__('Language switcher options', 'sitepress')).'</a></li>'.
                 '<li><a href="#lang-sec-4">'.icl_nobreak(__('Admin language', 'sitepress')).'</a></li>'.
-                '<li><a href="#lang-sec-5">'.icl_nobreak(__('Translation controls', 'sitepress')).'</a></li>'.
                 '<li><a href="#lang-sec-6">'.icl_nobreak(__('Blog posts to display', 'sitepress')).'</a></li>'.
                 '<li><a href="#lang-sec-7">'.icl_nobreak(__('Hide languages', 'sitepress')).'</a></li>'.
                 '<li><a href="#lang-sec-8">'.icl_nobreak(__('Make themes work multilingual', 'sitepress')).'</a></li>'.
@@ -444,6 +443,25 @@ global $language_switcher_defaults, $language_switcher_defaults_alt;
                                                     </label>
                                                 </li>
                                                 <li>
+                                                    <label>
+                                                        <input type="checkbox" id="icl_display_ls_in_menu" name="display_ls_in_menu" value="1"<?php if (!empty($sitepress_settings['display_ls_in_menu'])) echo ' checked="checked"'; ?> />
+                                                        <?php _e('Display the language switcher in the WP Menu', 'sitepress'); ?></label>
+                                                        <span id="icl_ls_menus_list" <?php if (empty($sitepress_settings['display_ls_in_menu'])):?> style="display: none;"<?php endif;?>>
+                                                            <?php $nav_menus = wp_get_nav_menus( array('orderby' => 'name') ); ?>
+                                                            <?php ?>
+                                                            <select name="menu_for_ls"> 
+                                                                <?php if(empty($nav_menus)): ?>  
+                                                                <option value="">--<?php _e('no menus defined', 'sitepress')?>--</option>
+                                                                <?php else: ?>
+                                                                <option value="">--<?php _e('select', 'sitepress')?>--</option>
+                                                                <?php endif; ?>
+                                                                <?php foreach($nav_menus as $nav_menu):?>
+                                                                    <option value="<?php echo $nav_menu->term_id ?>"<?php if($nav_menu->term_id == $sitepress_settings['menu_for_ls']):?> selected="selected"<?php endif;?>><?php echo $nav_menu->name ?></option>
+                                                                <?php endforeach; ?>
+                                                            </select>                                                            
+                                                        </span>                                                    
+                                                </li>                                                
+                                                <li>
                                                     <h4><?php echo __('Language switcher style', 'sitepress')?></h4>
                                                     
                                             <?php if(!defined('ICL_DONT_LOAD_LANGUAGE_SELECTOR_CSS') || !ICL_DONT_LOAD_LANGUAGE_SELECTOR_CSS): ?>                                            
@@ -496,7 +514,6 @@ global $language_switcher_defaults, $language_switcher_defaults_alt;
                                             </ul>
                                         </li>                    
                                         <li>
-                                        
                                             <h4><?php echo __('What to include in the language switcher', 'sitepress')?></h4>
                                             <ul>
                                                 <li>
@@ -518,7 +535,7 @@ global $language_switcher_defaults, $language_switcher_defaults_alt;
                                                 </label>                    
                                                 </li>                            
                                             </ul>
-
+                                        </li>
                                         <?php do_action('icl_language_switcher_options'); ?>
 
                                     </ul>
@@ -594,33 +611,6 @@ global $language_switcher_defaults, $language_switcher_defaults_alt;
             <?php endif; ?>                            
             
             <?php if(!empty($sitepress_settings['setup_complete']) && count($active_languages) > 1): ?>   
-                <a name="lang-sec-5"></a>
-                <table class="widefat">
-                    <thead>
-                        <tr>
-                            <th><?php _e('Translation controls', 'sitepress') ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <form id="icl_lang_more_options" name="icl_lang_more_options" action="">        
-                                <p>
-                                    <label>
-                                        <input type="checkbox" name="icl_translation_controls_on_posts_lists" <?php if(empty($sitepress_settings['hide_translation_controls_on_posts_lists'])) echo 'checked="checked"' ?> /> <?php _e('Display translation controls on posts and pages lists.','sitepress'); ?>
-                                    </label>
-                                </p>
-                                <p>
-                                    <input class="button" name="save" value="<?php echo __('Apply','sitepress') ?>" type="submit" />
-                                    <span class="icl_ajx_response" id="icl_ajx_response_mo"></span>
-                                </p>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br />
-
                 <a name="lang-sec-6"></a>
                 <table class="widefat">
                     <thead>

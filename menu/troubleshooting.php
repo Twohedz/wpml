@@ -22,6 +22,7 @@ if(isset($_GET['debug_action']) && $_GET['nonce']==wp_create_nonce($_GET['debug_
             unset($sitepress_settings['last_get_translator_status_call']);
             unset($sitepress_settings['last_icl_reminder_fetch']);
             unset($sitepress_settings['icl_account_email']);
+            unset($sitepress_settings['translators_management_info']);
 
             update_option('icl_sitepress_settings', $sitepress_settings);
             
@@ -43,6 +44,16 @@ if(isset($_GET['debug_action']) && $_GET['nonce']==wp_create_nonce($_GET['debug_
                 LEFT JOIN {$wpdb->posts} p ON t.element_id = p.ID 
                 WHERE t.element_id IS NOT NULL AND t.element_type LIKE 'post\\_%' AND p.ID IS NULL
             ");   
+            if(!empty($orphans)){
+                $wpdb->query("DELETE FROM {$wpdb->prefix}icl_translations WHERE translation_id IN (".join(',',$orphans).")");
+            }
+            
+            $orphans = $wpdb->get_col("
+                SELECT t.translation_id 
+                FROM {$wpdb->prefix}icl_translations t 
+                LEFT JOIN {$wpdb->comments} c ON t.element_id = c.comment_ID
+                WHERE t.element_type = 'comment' AND c.comment_ID IS NULL ");   
+                echo mysql_error();
             if(!empty($orphans)){
                 $wpdb->query("DELETE FROM {$wpdb->prefix}icl_translations WHERE translation_id IN (".join(',',$orphans).")");
             }
@@ -354,7 +365,13 @@ if(isset($_GET['debug_action']) && $_GET['nonce']==wp_create_nonce($_GET['debug_
                     $sitepress->set_element_language_details($t->term_taxonomy_id, 
                         'tax_' . $t->taxonomy, null, $sitepress->get_default_language());
                 }
-            }                  
+            } 
+            
+            $cids = $wpdb->get_col("SELECT c.comment_ID FROM {$wpdb->comments} c LEFT JOIN {$wpdb->prefix}icl_translations t ON t.element_id = c.comment_id AND t.element_type='comment' WHERE t.element_id IS NULL");
+            foreach($cids as $cid){
+                $sitepress->set_element_language_details($cid, 'comment', null, $sitepress->get_default_language());    
+            }
+                             
             exit;
     }
 }
@@ -473,7 +490,10 @@ if( (isset($_POST['icl_reset_allnonce']) && $_POST['icl_reset_allnonce']==wp_cre
     })
     </script>
     <br clear="all" /><br />
-    <div class="icl_cyan_box" >           
+
+    <?php if(!defined('ICL_DONT_PROMOTE') || !ICL_DONT_PROMOTE):?>
+
+    <div class="icl_cyan_box" >
     <h3><?php _e('More options', 'sitepress')?></h3>
     <form name="icl_torubleshooting_more_options" id="icl_torubleshooting_more_options" action="">
     <label><input type="checkbox" name="troubleshooting_options[raise_mysql_errors]" value="1" <?php 
@@ -491,7 +511,9 @@ if( (isset($_POST['icl_reset_allnonce']) && $_POST['icl_reset_allnonce']==wp_cre
     </form>
     </div>
     
-    <br clear="all" /><br />
+    <br clear="all" />
+    <?php endif; ?>
+    <br />
     <script type="text/javascript">
         jQuery(document).ready(function(){
             jQuery('#icl_remove_ghost').click(function(){
@@ -648,13 +670,14 @@ if( (isset($_POST['icl_reset_allnonce']) && $_POST['icl_reset_allnonce']==wp_cre
     <small style="margin-left:10px;">Sets source language to NULL in the icl_translations table. </small>
     </p>
 
+    <?php if(!defined('ICL_DONT_PROMOTE') || !ICL_DONT_PROMOTE):?>
     <p>
     <input id="icl_sync_cancelled" type="button" class="button-secondary" value="<?php _e('Check cancelled jobs on ICanLocalize', 'sitepress')?>" /><br />
     <small style="margin-left:10px;">When using the translation pickup mode cancelled jobs on ICanLocalize need to be synced manually.</small>
     </p>
     <span id="icl_sync_cancelled_resp"></span>
     <input type="hidden" id="icl_ts_t2c" value="" />
-
+    <?php endif; ?>
     <p>
     <input id="icl_add_missing_lang" type="button" class="button-secondary" value="<?php _e('Set language information', 'sitepress')?>" /><br />
     <small style="margin-left:10px;">Adds language information to posts and taxonomies that are missing this information.</small>
@@ -662,7 +685,9 @@ if( (isset($_POST['icl_reset_allnonce']) && $_POST['icl_reset_allnonce']==wp_cre
 
     </div>    
       
-    <br clear="all" /><br />
+    <br clear="all" />
+    <?php if(!defined('ICL_DONT_PROMOTE') || !ICL_DONT_PROMOTE):?>
+    <br />
     <div class="icl_cyan_box" >       
     <h3><?php _e('Reset PRO translation configuration', 'sitepress')?></h3>
     <div class="icl_form_errors"><?php _e("Resetting your ICanLocalize account will interrupt any translation jobs that you have in progress. Only use this function if your ICanLocalize account doesn't include any jobs, or if the account was deleted.", 'sitepress'); ?></div>
@@ -672,13 +697,17 @@ if( (isset($_POST['icl_reset_allnonce']) && $_POST['icl_reset_allnonce']==wp_cre
     
     </div>
     
-    <br clear="all" /><br />
+    <br clear="all" />
+    <?php endif; ?>
+    <br />
     <div class="icl_cyan_box" >       
     <h3><?php _e('Database dump', 'sitepress')?></h3>
     <a class="button" href="admin.php?page=<?php echo ICL_PLUGIN_FOLDER ?>/menu/troubleshooting.php&amp;icl_action=dbdump&amp;nonce=<?php echo wp_create_nonce('dbdump') ?>"><?php _e('Download', 'sitepress') ?></a>
     </div>
     
-    <br clear="all" /><br />
+    <br clear="all" />
+    <?php if(!defined('ICL_DONT_PROMOTE') || !ICL_DONT_PROMOTE):?>
+    <br />
     <div class="icl_cyan_box" >    
     <a name="icl-connection-test"></a>
     <h3><?php _e('ICanLocalize connection test', 'sitepress')?></h3>
@@ -695,7 +724,7 @@ if( (isset($_POST['icl_reset_allnonce']) && $_POST['icl_reset_allnonce']==wp_cre
             $user['blogid'] = $wpdb->blogid?$wpdb->blogid:1;
             $user['url'] = get_option('siteurl');
             $user['title'] = get_option('blogname');
-            $user['description'] = $sitepress_settings['icl_site_description'];
+            $user['description'] = isset($sitepress_settings['icl_site_description']) ? $sitepress_settings['icl_site_description'] : '';
             $user['is_verified'] = 1;                
            if(defined('ICL_AFFILIATE_ID') && defined('ICL_AFFILIATE_KEY')){
                 $user['affiliate_id'] = ICL_AFFILIATE_ID;
@@ -705,7 +734,7 @@ if( (isset($_POST['icl_reset_allnonce']) && $_POST['icl_reset_allnonce']==wp_cre
             $user['project_kind'] = 2;
             $user['pickup_type'] = intval($sitepress_settings['translation_pickup_method']);
             $notifications = 0;
-            if ( $sitepress_settings['icl_notify_complete']){
+            if ( !empty($sitepress_settings['icl_notify_complete'])){
                 $notifications += 1;
             }
             if ( $sitepress_settings['alert_delay']){
@@ -734,9 +763,11 @@ if( (isset($_POST['icl_reset_allnonce']) && $_POST['icl_reset_allnonce']==wp_cre
     <?php endif; ?>
     <a class="button" href="admin.php?page=<?php echo ICL_PLUGIN_FOLDER ?>/menu/troubleshooting.php&ts=<?php echo time()?>&icl_action=icl-connection-test#icl-connection-test"><?php _e('Connect', 'sitepress') ?></a>
     </div>
+    <br clear="all" />
+    <?php endif; ?>
         
     
-    <br clear="all" /><br />
+    <br />
     <div class="icl_cyan_box" >       
     
     <?php    
